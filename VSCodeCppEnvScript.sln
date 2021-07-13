@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31423.177
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSCodeCppEnvScript", "VSCodeCppEnvScript\VSCodeCppEnvScript.csproj", "{5161F6C4-C3DB-492B-861B-813FA33F93FD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5161F6C4-C3DB-492B-861B-813FA33F93FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5161F6C4-C3DB-492B-861B-813FA33F93FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5161F6C4-C3DB-492B-861B-813FA33F93FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5161F6C4-C3DB-492B-861B-813FA33F93FD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E138CED0-A5C1-4A8B-8D87-7E4B9F91AF11}
+	EndGlobalSection
+EndGlobal
