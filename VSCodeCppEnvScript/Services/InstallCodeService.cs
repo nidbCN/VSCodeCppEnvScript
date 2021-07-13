@@ -24,7 +24,7 @@ namespace VSCodeCppEnvScript.Services
             path = dirInfo.TryCreate() ? dirInfo.FullName : _defalutPath;
 
             var installArgPath = $"/DIR=\"{path}\"";
-            var installArgTask = "/MERGETASKS=\"!runcode,desktopicon,quicklaunchicon,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath\"";
+            const string installArgTask = "/MERGETASKS=\"!runcode,desktopicon,quicklaunchicon,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath\"";
 
             var installer = new Process()
             {
