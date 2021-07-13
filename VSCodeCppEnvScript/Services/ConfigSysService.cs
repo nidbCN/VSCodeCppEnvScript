@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.IO;
 
 namespace VSCodeCppEnvScript.Services
 {
-    class ConfigSysService
+    public class ConfigSysService : IConfigSysService
     {
+        public void ConfigEnvVariables(string path)
+        {
+            Directory.CreateDirectory(path);
+        }
     }
 }

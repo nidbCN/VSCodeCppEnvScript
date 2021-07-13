@@ -11,9 +11,6 @@ namespace VSCodeCppEnvScript.Services
         /// </summary>
         /// <param name="path">MinGW bin path.</param>
         /// <returns></returns>
-        public void ConfigEnvVariables(string path)
-        {
-
-        }
+        public void ConfigEnvVariables(string path);
     }
 }

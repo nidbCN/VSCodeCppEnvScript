@@ -4,7 +4,7 @@ using System.Text;
 
 namespace VSCodeCppEnvScript.Services
 {
-    class ConfigEnvService
+    public class ConfigEnvService
     {
     }
 }

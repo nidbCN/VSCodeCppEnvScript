@@ -9,15 +9,15 @@ namespace VSCodeCppEnvScript.Extensions
         {
             if (path is null) throw new ArgumentNullException(nameof(path));
 
-            FileInfo file = null;
-
             try
             {
-                file = new FileInfo(path);
+                _ = new FileInfo(path);
+                return true;
             }
-            catch (Exception) { }
-
-            return !(file is null);
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

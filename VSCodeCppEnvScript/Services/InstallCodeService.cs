@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using VSCodeCppEnvScript.Extensions;
 
@@ -9,9 +10,18 @@ namespace VSCodeCppEnvScript.Services
     {
         private readonly string _defalutPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
 
+        public InstallCodeService()
+        {
+
+        }
+
         public async Task Install(string path)
         {
-            if (!path.IsValidPath()) { path = _defalutPath; }
+            if(path is null) throw new ArgumentNullException(nameof(path));       
+
+            var dirInfo = new DirectoryInfo(path);
+
+            path = dirInfo.TryCreate() ? dirInfo.FullName : _defalutPath;
 
             var installArgPath = $"/DIR=\"{path}\"";
             var installArgTask = "/MERGETASKS=\"!runcode,desktopicon,quicklaunchicon,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath\"";
