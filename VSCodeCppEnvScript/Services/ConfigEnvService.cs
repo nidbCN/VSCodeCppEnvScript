@@ -19,7 +19,13 @@ namespace VSCodeCppEnvScript.Services
         {
 
         }
-        public async Task<bool> ExtractToPath(string path)
+
+        public Task<bool> CreateProjectFolder(string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> ExtractEnvironment(string path)
         {
             var dir = new DirectoryInfo(path);
             if (!dir.TryCreate())

@@ -4,6 +4,7 @@ namespace VSCodeCppEnvScript.Services
 {
     public interface IConfigEnvService
     {
-        public Task<bool> ExtractToPath(string path);
+        public Task<bool> ExtractEnvironment(string path);
+        public Task<bool> CreateProjectFolder(string path);
     }
 }

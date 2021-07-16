@@ -6,16 +6,16 @@ using VSCodeCppEnvScript.Extensions;
 
 namespace VSCodeCppEnvScript.Services
 {
-    public class InstallCodeService : IInstallCodeService
+    public class InstallSoftwareService : IInstallServiceService
     {
         private readonly string _defalutPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
 
-        public InstallCodeService()
+        public InstallSoftwareService()
         {
 
         }
 
-        public async Task Install(string path)
+        public async Task InstallSoftware(string path)
         {
             if(path is null) throw new ArgumentNullException(nameof(path));       
 

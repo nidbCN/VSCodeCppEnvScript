@@ -1,77 +1,51 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using CommandLine;
 using VSCodeCppEnvScript.Services;
+using VSCodeCppEnvScript.Options;
 
 namespace VSCodeCppEnvScript.Controllers
 {
     public class ConsoleController
     {
-        private readonly string _defaultPath = 
-            Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
         private readonly ILogger _logger;
-        private readonly IInstallCodeService _installCodeService;
+        private readonly IInstallServiceService _installCodeService;
         private readonly IConfigEnvService _configEnvService;
         private readonly IConfigSysService _configSysService;
 
         public ConsoleController(
             ILogger logger,
-            IInstallCodeService installCodeService,
+            IInstallServiceService installCodeService,
             IConfigEnvService configEnvService,
             IConfigSysService configSysService
         )
         {
             _logger = logger
                 ?? throw new ArgumentNullException(nameof(logger));
-            _installCodeService = installCodeService 
+            _installCodeService = installCodeService
                 ?? throw new ArgumentNullException(nameof(installCodeService));
-            _configEnvService = configEnvService 
+            _configEnvService = configEnvService
                 ?? throw new ArgumentNullException(nameof(configEnvService));
-            _configSysService = configSysService 
+            _configSysService = configSysService
                 ?? throw new ArgumentNullException(nameof(configSysService));
         }
 
-        public async void ExecCommand(string[] args) 
+        public void ExecCommand(string[] args)
         {
-            var codePath = Path.Combine(_defaultPath, "VSCode");
-            var envPath = Path.Combine(_defaultPath, "MinGW-w64");
-
-            if (args.Length == 0)
-            {
-
-            }
-
-            foreach(var argStr in args)
-            {
-                if (!argStr.StartsWith('-') && !argStr.StartsWith('/'))
+            Parser.Default.ParseArguments<CommandOption>(args)
+                .WithParsed(async o =>
                 {
-                    _logger.LogError($"Invalid argument:{argStr}, skip.");
-                    ShowHelpMessage();
-                    continue;
-                }
+                    await _installCodeService.InstallSoftware(o.SoftwarePath);
+                    await _configEnvService.ExtractEnvironment(o.EnvironmentPath);
+                    await _configEnvService.CreateProjectFolder(o.ProjectPath);
+                    _configSysService.AddToPath(o.EnvironmentPath);
 
-                var argArray = argStr[1..].ToLower().Split('=');
-
-
-                switch(argArray[0])
+                }).WithNotParsed(e =>
                 {
-                    case "h":
-                    case "-help":
-                        ShowHelpMessage();
-                        break;
-                    case "ep":
-                    case "-envPath":
-                }
-            }
+
+                });
+
         }
 
-        private void ShowHelpMessage()
-        {
-            Console.WriteLine("-h | --help: Show help message.");
-            Console.WriteLine("-cp=<path> | --codePath=<pah>: VS Code install path.");
-            Console.WriteLine("-ep=<path> | --envPath=<path>: Environment path.");
-        }
     }
 }
