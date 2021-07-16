@@ -2,7 +2,7 @@
 
 namespace VSCodeCppEnvScript.Services
 {
-    public interface IInstallServiceService
+    public interface IInstallSoftwareService
     {
         public Task InstallSoftware(string path);
     }

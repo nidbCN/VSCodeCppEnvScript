@@ -6,7 +6,7 @@ using VSCodeCppEnvScript.Extensions;
 
 namespace VSCodeCppEnvScript.Services
 {
-    public class InstallSoftwareService : IInstallServiceService
+    public class InstallSoftwareService : IInstallSoftwareService
     {
         private readonly string _defalutPath = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
 
