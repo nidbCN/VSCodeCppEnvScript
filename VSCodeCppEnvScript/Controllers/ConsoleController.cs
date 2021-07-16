@@ -41,9 +41,11 @@ namespace VSCodeCppEnvScript.Controllers
                 .WithParsed(o =>
                 {
                     _logger.LogInformation("Parse arguments successed.");
-                    Task.WaitAll(_installSoftwareService.InstallSoftware(o.SoftwarePath),
+                    Task.WaitAll(
+                        _installSoftwareService.InstallSoftware(o.SoftwarePath),
                         _configEnvService.ExtractEnvironment(o.EnvironmentPath),
-                        _configEnvService.CreateProjectFolder(o.ProjectPath));
+                        _configEnvService.CreateProjectFolder(o.ProjectPath)
+                    );
 
                     _configSysService.AddToPath(Path.Combine(o.EnvironmentPath, "bin"));
                 }).WithNotParsed(e =>

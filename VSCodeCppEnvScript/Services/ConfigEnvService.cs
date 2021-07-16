@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Text;
 using System.Threading.Tasks;
-using VSCodeCppEnvScript.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace VSCodeCppEnvScript.Services
 {
@@ -14,10 +12,12 @@ namespace VSCodeCppEnvScript.Services
             Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
         private readonly string _zipFilePath =
             Path.Combine(Environment.CurrentDirectory, "mingw.zip");
+        private readonly ILogger _logger;
 
-        public ConfigEnvService()
+        public ConfigEnvService(ILogger logger)
         {
-
+            _logger = logger
+                ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public Task<bool> CreateProjectFolder(string path)
@@ -27,15 +27,8 @@ namespace VSCodeCppEnvScript.Services
 
         public async Task<bool> ExtractEnvironment(string path)
         {
-            var dir = new DirectoryInfo(path);
-            if (!dir.TryCreate())
-            {
-                path = _defalutPath;
-                dir = new DirectoryInfo(path);
-
-                if (!dir.TryCreate())
-                    return await new Task<bool>(() => false);
-            }
+            if (!TryCreateFolder(path, "MinGW"))
+                return new Task<bool>(() => false).Result;
 
             return await new Task<bool>(() =>
             {
@@ -44,11 +37,37 @@ namespace VSCodeCppEnvScript.Services
                     ZipFile.ExtractToDirectory(_zipFilePath, path);
                     return true;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _logger.LogError($"Unzip package error!\n{ex.Message}");
                     return false;
                 }
             });
+        }
+
+        private bool TryCreateFolder(string path, string defaultFolderName)
+        {
+            var result = true;
+            try
+            {
+                Directory.CreateDirectory(path);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Could not create folder at {path}, try default path.\n{e.Message}");
+                var backupPath = Path.Combine(_defalutPath, defaultFolderName);
+                try
+                {
+                    Directory.CreateDirectory(backupPath);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Could not create folder at {backupPath}, fault!\n{ex.Message}");
+                    result = false;
+                }
+            }
+
+            return result;
         }
     }
 }
