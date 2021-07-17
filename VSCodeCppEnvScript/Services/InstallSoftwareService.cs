@@ -3,7 +3,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSCodeCppEnvScript.Extensions;
+using VSCodeCppEnvScript.Utils;
 
 namespace VSCodeCppEnvScript.Services
 {
@@ -23,9 +23,8 @@ namespace VSCodeCppEnvScript.Services
         {
             if(path is null) throw new ArgumentNullException(nameof(path));
 
-            var dirInfo = new DirectoryInfo(path);
-
-            path = dirInfo.TryCreate() ? dirInfo.FullName : _defalutPath;
+            if (!DirectoryUtil.TryCreateFolder(ref path, Path.Combine(_defalutPath, "VSCode")))
+                return;
 
             var installArgPath = $"/DIR=\"{path}\"";
             const string installArgTask = "/MERGETASKS=\"!runcode,desktopicon,quicklaunchicon,addcontextmenufiles,addcontextmenufolders,associatewithfiles,addtopath\"";
