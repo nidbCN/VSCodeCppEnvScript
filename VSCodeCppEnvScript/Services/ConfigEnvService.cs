@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -54,8 +56,18 @@ namespace VSCodeCppEnvScript.Services
                     return false;
                 }
 
-                var cDir = Path.Combine(defaultProjPath, "C-Codes");
-                var cppDir = Path.Combine(defaultProjPath, "Cpp-Codes");
+                var files = new string[]
+                {
+                    Path.Combine(archieveFileName, "C-Codes", @"c_cpp_properties.json"),
+                    Path.Combine(archieveFileName, "C-Codes", @"launch.json"),
+                    Path.Combine(archieveFileName, "Cpp-Codes", @"c_cpp_properties.json"),
+                    Path.Combine(archieveFileName, "Cpp-Codes", @"launch.json"),
+                };
+
+                var rulesDict = new Dictionary<string, string>() 
+                {
+                    { "%MIGW_PATH%", }
+                };
 
 
 
@@ -82,5 +94,24 @@ namespace VSCodeCppEnvScript.Services
                 }
             });
         }
+
+        private static void ParseConfigFile(string path, Dictionary<string, string> dict)
+        {
+            if (path is null) throw new ArgumentNullException(nameof(path));
+
+            var content = File.ReadAllText(path);
+
+            foreach (var key in dict.Keys)
+            {
+                if (dict.TryGetValue(key, out string dest))
+                {
+                    content = content.Replace(key, dest);
+                }
+            }
+
+            File.WriteAllText(path, content);
+
+        }
+
     }
 }

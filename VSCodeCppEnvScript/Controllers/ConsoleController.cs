@@ -43,6 +43,8 @@ namespace VSCodeCppEnvScript.Controllers
                         + Environment.NewLine
                         + JsonSerializer.Serialize(option, _serializerOptions));
 
+                    return;
+
                     Task.WaitAll(
                         _installSoftwareService.InstallSoftware(option.SoftwarePath),
                         _configEnvService.ExtractEnvironment(option.EnvironmentPath),
