@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using VSCodeCppEnvScript.Options;
@@ -24,26 +23,34 @@ namespace VSCodeCppEnvScript.Services
                 ?? throw new ArgumentNullException(nameof(options));
         }
 
-        public async Task<bool> CreateProjectFolder(string path)
+        public async Task<bool> CreateProjectFolder()
         {
-            _options.Value.CodeInstallerName = "TEST";
+            _logger.LogInformation("Start config project folders.");
 
-            return false;
-
+            var path =
+                _options.Value.CommandOption.ProjectPath
+                ??= _options.Value.DefaultProjectPath;
 
             if (!DirectoryUtil.TryCreateFolder(ref path, _options.Value.DefaultProjectPath))
-                return new Task<bool>(() => false).Result;
+            {
+                _logger.LogWarning(
+                    $"Could not create folder: {path} for project.");
+                return false;
+            }
 
             var archieveFileName = _options.Value.EnvArchiveName;
-            var defaultProjPath = _options.Value.DefaultProjectPath;
 
             return await new Task<bool>(() =>
             {
+                _logger.LogInformation(
+                    $"Start extract project workspace {archieveFileName} to {path}.");
+
+                // Extarct file.
                 try
                 {
                     ZipFile.ExtractToDirectory(
                         archieveFileName,
-                        defaultProjPath);
+                        path);
                 }
                 catch (Exception ex) when (ex is NotSupportedException || ex is InvalidDataException)
                 {
@@ -61,6 +68,7 @@ namespace VSCodeCppEnvScript.Services
                     return false;
                 }
 
+                // Use path string to replace %var% in config files.
                 var files = new string[]
                 {
                     Path.Combine(archieveFileName, "C-Codes", @"c_cpp_properties.json"),
@@ -69,54 +77,78 @@ namespace VSCodeCppEnvScript.Services
                     Path.Combine(archieveFileName, "Cpp-Codes", @"launch.json"),
                 };
 
-                var rulesDict = new Dictionary<string, string>() 
+                var rulesDict = new Dictionary<string, string>()
                 {
-                    { "%MIGW_PATH%", ""}
+                    { "%MIGW_PATH%", path}
                 };
 
+                if (!new ConfigFileFilter(rulesDict).TryFilterFiles(files))
+                {
+                    _logger.LogWarning("Some workspace config files cannot be found when filter files!");
+                }
 
+                // update path.
+                if (_options.Value.CommandOption.ProjectPath != path)
+                {
+                    _options.Value.CommandOption.ProjectPath = path;
+                }
+
+                _logger.LogInformation("Success config project workspace.");
 
                 return true;
             });
         }
 
-        public async Task<bool> ExtractEnvironment(string path)
+        public async Task<bool> ExtractEnvironment()
         {
+            _logger.LogInformation("Start config environment.");
+
+            var path =
+                _options.Value.CommandOption.EnvironmentPath
+                ??= _options.Value.DefaultEnvironmentPath;
+
             if (!DirectoryUtil.TryCreateFolder(ref path, _options.Value.DefaultEnvironmentPath))
-                return new Task<bool>(() => false).Result;
+            {
+                _logger.LogWarning($"Could not create folder: {path} for environment.");
+                return false;
+            }
 
             return await new Task<bool>(() =>
             {
+                var archieveFileName = _options.Value.EnvArchiveName;
+
+                _logger.LogInformation(
+                    $"Start extract project workspace {archieveFileName} to {path}.");
+
                 try
                 {
-                    ZipFile.ExtractToDirectory(_options.Value.EnvArchiveName, path);
-                    return true;
+                    ZipFile.ExtractToDirectory(archieveFileName, path);
+                }
+                catch (Exception ex) when (ex is NotSupportedException || ex is InvalidDataException)
+                {
+                    _logger.LogError($"Archieve file {archieveFileName} is damaged, please check your download!\n{ex.Message}");
+                    return false;
+                }
+                catch (Exception ex) when (ex is FileNotFoundException)
+                {
+                    _logger.LogError($"Archieve file {archieveFileName} has losed, please check your download!\n{ex.Message}");
+                    return false;
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Unzip package error!\n{ex.Message}");
+                    _logger.LogError($"Could not unzip file, unknow error!\n{ex.Message}");
                     return false;
                 }
+
+                if (path != _options.Value.CommandOption.EnvironmentPath)
+                {
+                    _options.Value.CommandOption.EnvironmentPath = path;
+                }
+
+                _logger.LogInformation("Success install environment.");
+
+                return true;
             });
         }
-
-        private static void ParseConfigFile(string path, Dictionary<string, string> dict)
-        {
-            if (path is null) throw new ArgumentNullException(nameof(path));
-
-            var content = File.ReadAllText(path);
-
-            foreach (var key in dict.Keys)
-            {
-                if (dict.TryGetValue(key, out string dest))
-                {
-                    content = content.Replace(key, dest);
-                }
-            }
-
-            File.WriteAllText(path, content);
-
-        }
-
     }
 }

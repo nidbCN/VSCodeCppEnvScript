@@ -1,34 +1,26 @@
 ﻿using System;
-using System.Linq;
+using Microsoft.Extensions.Logging;
+using VSCodeCppEnvScript.Utils;
 
 namespace VSCodeCppEnvScript.Services
 {
     public class ConfigSysService : IConfigSysService
     {
-        public ConfigSysService()
-        {
+        private readonly ILogger<ConfigSysService> _logger;
 
+        public ConfigSysService(ILogger<ConfigSysService> logger)
+        {
+            _logger = logger 
+                ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public void AddToPath(params string[] paths)
         {
-            var envPaths = Environment.GetEnvironmentVariable(
-                "path",
-                EnvironmentVariableTarget.Machine
-            );
+            _logger.LogInformation("Start add environment bin to path.");
 
-            var envPathsAddList = 
-                envPaths.Split(';')
-                .Where((x, i) => x != paths[i])
-                .ToList();
+            EnvironmentUtil.AddToPath(paths);
 
-            var envPathsAppend = string.Join(';', envPathsAddList);
-
-            Environment.SetEnvironmentVariable(
-                "path",
-                envPathsAppend + envPaths,
-                EnvironmentVariableTarget.Machine
-            );
+            _logger.LogInformation($"Success add to path.");
         }
     }
 }

@@ -6,7 +6,7 @@ namespace VSCodeCppEnvScript.Options
 {
     public class MetadataOption
     {
-        public CommandOption CommandOption { get; set; }
+        public CommandOption CommandOption { get; set; } = new CommandOption();
 
         public string DefaultEnvironmentPath =>
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "MinGW");

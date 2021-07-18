@@ -28,9 +28,9 @@ namespace VSCodeCppEnvScript.Controllers
             IConfigSysService configSysService
         )
         {
-            _options = options 
-                ?? throw new ArgumentNullException(nameof(options)));
-            _logger = logger 
+            _options = options
+                ?? throw new ArgumentNullException(nameof(options));
+            _logger = logger
                 ?? throw new ArgumentNullException(nameof(logger));
             _installSoftwareService = installCodeService
                 ?? throw new ArgumentNullException(nameof(installCodeService));
@@ -42,31 +42,20 @@ namespace VSCodeCppEnvScript.Controllers
 
         public void ExecCommand(string[] args)
         {
-            Parser.Default.ParseArguments<MetadataOption>(args)
+            Parser.Default.ParseArguments<CommandOption>(args)
                 .WithParsed(option =>
                 {
-
-
+                    _options.Value.CommandOption = option;
 
                     _logger.LogInformation(
                         "Parse arguments successed."
                         + Environment.NewLine
                         + JsonSerializer.Serialize(option, _serializerOptions));
 
-
-
-
-
-                    _configEnvService.CreateProjectFolder(option.ProjectPath).Wait();
-
-                    _installSoftwareService.InstallSoftware(option.SoftwarePath).Wait();
-
-                    return;
                     Task.WaitAll(
-
-//_configEnvService.ExtractEnvironment(option.EnvironmentPath),
-
-);
+                        _installSoftwareService.InstallSoftware(),
+                        _configEnvService.CreateProjectFolder(),
+                        _configEnvService.ExtractEnvironment());
 
                     _configSysService.AddToPath(Path.Combine(option.EnvironmentPath, "bin"));
                 })
