@@ -28,10 +28,9 @@ namespace VSCodeCppEnvScript.Controllers
             IConfigSysService configSysService
         )
         {
-            _options = options 
+            _options = options
                 ?? throw new ArgumentNullException(nameof(options));
-            _logger = logger
-                ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _installSoftwareService = installCodeService
                 ?? throw new ArgumentNullException(nameof(installCodeService));
             _configEnvService = configEnvService
@@ -45,7 +44,11 @@ namespace VSCodeCppEnvScript.Controllers
             Parser.Default.ParseArguments<CommandOption>(args)
                 .WithParsed(option =>
                 {
-                    _logger.LogInformation("Parse arguments successed.");
+                    _logger.LogInformation(
+                        "Parse arguments successed."
+                        + Environment.NewLine
+                        + JsonSerializer.Serialize(option, _serializerOptions));
+
                     Task.WaitAll(
                         _installSoftwareService.InstallSoftware(option.SoftwarePath),
                         _configEnvService.ExtractEnvironment(option.EnvironmentPath),
@@ -56,7 +59,10 @@ namespace VSCodeCppEnvScript.Controllers
                 })
                 .WithNotParsed(error =>
                 {
-                    _logger.LogError($"Could not parse arguments!\n{JsonSerializer.Serialize(args, _serializerOptions)}");
+                    _logger.LogError(
+                        "Could not parse arguments!"
+                        + Environment.NewLine
+                        + JsonSerializer.Serialize(args, _serializerOptions));
                     error.Output();
                 });
         }

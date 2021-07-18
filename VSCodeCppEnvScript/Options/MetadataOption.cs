@@ -5,6 +5,7 @@ namespace VSCodeCppEnvScript.Options
 {
     public class MetadataOption
     {
+        public string[] ConsoleArgs { get; set; }
         public string EnvArchiveName { get; set; }
         public string ProjConfigArchieveName { get; set; }
         public string CodeInstallerName { get; set; }
