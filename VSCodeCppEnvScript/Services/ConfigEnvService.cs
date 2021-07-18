@@ -26,6 +26,11 @@ namespace VSCodeCppEnvScript.Services
 
         public async Task<bool> CreateProjectFolder(string path)
         {
+            _options.Value.CodeInstallerName = "TEST";
+
+            return false;
+
+
             if (!DirectoryUtil.TryCreateFolder(ref path, _options.Value.DefaultProjectPath))
                 return new Task<bool>(() => false).Result;
 
@@ -66,7 +71,7 @@ namespace VSCodeCppEnvScript.Services
 
                 var rulesDict = new Dictionary<string, string>() 
                 {
-                    { "%MIGW_PATH%", }
+                    { "%MIGW_PATH%", ""}
                 };
 
 

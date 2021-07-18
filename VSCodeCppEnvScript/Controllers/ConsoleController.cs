@@ -6,25 +6,32 @@ using Microsoft.Extensions.Logging;
 using CommandLine;
 using VSCodeCppEnvScript.Services;
 using VSCodeCppEnvScript.Options;
+using Microsoft.Extensions.Options;
+
 namespace VSCodeCppEnvScript.Controllers
 {
     public class ConsoleController
     {
         private readonly JsonSerializerOptions _serializerOptions
             = new JsonSerializerOptions() { WriteIndented = true };
+        private readonly IOptions<MetadataOption> _options;
         private readonly ILogger<ConsoleController> _logger;
         private readonly IInstallSoftwareService _installSoftwareService;
         private readonly IConfigEnvService _configEnvService;
         private readonly IConfigSysService _configSysService;
 
         public ConsoleController(
+            IOptions<MetadataOption> options,
             ILogger<ConsoleController> logger,
             IInstallSoftwareService installCodeService,
             IConfigEnvService configEnvService,
             IConfigSysService configSysService
         )
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _options = options 
+                ?? throw new ArgumentNullException(nameof(options)));
+            _logger = logger 
+                ?? throw new ArgumentNullException(nameof(logger));
             _installSoftwareService = installCodeService
                 ?? throw new ArgumentNullException(nameof(installCodeService));
             _configEnvService = configEnvService
@@ -35,21 +42,31 @@ namespace VSCodeCppEnvScript.Controllers
 
         public void ExecCommand(string[] args)
         {
-            Parser.Default.ParseArguments<CommandOption>(args)
+            Parser.Default.ParseArguments<MetadataOption>(args)
                 .WithParsed(option =>
                 {
+
+
+
                     _logger.LogInformation(
                         "Parse arguments successed."
                         + Environment.NewLine
                         + JsonSerializer.Serialize(option, _serializerOptions));
 
-                    return;
 
+
+
+
+                    _configEnvService.CreateProjectFolder(option.ProjectPath).Wait();
+
+                    _installSoftwareService.InstallSoftware(option.SoftwarePath).Wait();
+
+                    return;
                     Task.WaitAll(
-                        _installSoftwareService.InstallSoftware(option.SoftwarePath),
-                        _configEnvService.ExtractEnvironment(option.EnvironmentPath),
-                        _configEnvService.CreateProjectFolder(option.ProjectPath)
-                    );
+
+//_configEnvService.ExtractEnvironment(option.EnvironmentPath),
+
+);
 
                     _configSysService.AddToPath(Path.Combine(option.EnvironmentPath, "bin"));
                 })
@@ -59,7 +76,9 @@ namespace VSCodeCppEnvScript.Controllers
                         "Could not parse arguments!"
                         + Environment.NewLine
                         + JsonSerializer.Serialize(args, _serializerOptions));
-                    error.Output();
+
+                    Console.SetOut(error.Output());
+                    Console.WriteLine();
                 });
         }
     }
