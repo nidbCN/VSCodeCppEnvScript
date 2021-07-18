@@ -11,9 +11,9 @@ namespace VSCodeCppEnvScript.Services
     {
         private readonly string _defalutPath 
             = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-        private readonly ILogger _logger;
+        private readonly ILogger<InstallSoftwareService> _logger;
 
-        public InstallSoftwareService(ILogger logger)
+        public InstallSoftwareService(ILogger<InstallSoftwareService> logger)
         {
             _logger = logger 
                 ?? throw new ArgumentNullException(nameof(logger));

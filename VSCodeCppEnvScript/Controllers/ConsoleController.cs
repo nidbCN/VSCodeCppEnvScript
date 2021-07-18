@@ -6,8 +6,6 @@ using Microsoft.Extensions.Logging;
 using CommandLine;
 using VSCodeCppEnvScript.Services;
 using VSCodeCppEnvScript.Options;
-using Microsoft.Extensions.Options;
-
 namespace VSCodeCppEnvScript.Controllers
 {
     public class ConsoleController
@@ -15,21 +13,17 @@ namespace VSCodeCppEnvScript.Controllers
         private readonly JsonSerializerOptions _serializerOptions
             = new JsonSerializerOptions() { WriteIndented = true };
         private readonly ILogger<ConsoleController> _logger;
-        private readonly IOptions<MetadataOption> _options;
         private readonly IInstallSoftwareService _installSoftwareService;
         private readonly IConfigEnvService _configEnvService;
         private readonly IConfigSysService _configSysService;
 
         public ConsoleController(
             ILogger<ConsoleController> logger,
-            IOptions<MetadataOption> options,
             IInstallSoftwareService installCodeService,
             IConfigEnvService configEnvService,
             IConfigSysService configSysService
         )
         {
-            _options = options
-                ?? throw new ArgumentNullException(nameof(options));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _installSoftwareService = installCodeService
                 ?? throw new ArgumentNullException(nameof(installCodeService));
