@@ -6,6 +6,10 @@ using VSCodeCppEnvScript.Controllers;
 using VSCodeCppEnvScript.Services;
 using System.IO;
 using VSCodeCppEnvScript.Options;
+using System.Security.Principal;
+using System.Diagnostics;
+using System;
+using System.Reflection;
 
 namespace VSCodeCppEnvScript
 {

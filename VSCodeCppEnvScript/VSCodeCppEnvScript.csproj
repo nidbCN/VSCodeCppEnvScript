@@ -16,6 +16,8 @@
     <SignAssembly>false</SignAssembly>
     <ApplicationIcon />
     <Win32Resource />
+    <AssemblyOriginatorKeyFile>TEST.pfx</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
   </PropertyGroup>
 
   <ItemGroup>
